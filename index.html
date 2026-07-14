@@ -22,7 +22,7 @@
       <button class="nav-button" data-view="publico">Acompanhamento</button>
       <button class="nav-button" data-view="configuracoes">Configurações</button>
     </nav>
-    <div class="top-actions"><button class="notification-button" id="openNotifications" aria-label="Notificações">🔔<span id="notificationCount">0</span></button><button class="secondary compact" id="requestReport">Solicitar laudo</button><button class="primary compact" id="newReport">+ Novo laudo</button></div>
+    <div class="top-actions"><span class="cloud-status" id="cloudStatus">Conectando…</span><button class="notification-button" id="openNotifications" aria-label="Notificações">🔔<span id="notificationCount">0</span></button><button class="secondary compact" id="requestReport">Solicitar laudo</button><button class="secondary compact" id="adminAccess">Acesso administrativo</button><button class="primary compact" id="newReport">+ Novo laudo</button></div>
   </header>
 
   <main>
@@ -108,7 +108,7 @@
         <label>Progresso <output id="progressOutput">0%</output><input id="progress" type="range" min="0" max="100" step="5" value="0"></label>
         <label>Responsável técnico<input id="responsible" value="Bruno Rodrigues Xaxier"></label>
         <label>CREA<input id="crea" value="2118287402"></label>
-        <label>Arquivo PDF<input id="pdfFile" type="file" accept="application/pdf"><small id="currentPdf"></small></label>
+        <label>Arquivo do laudo<input id="pdfFile" type="file" accept="application/pdf,.doc,.docx,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"><small id="currentPdf">PDF ou Word</small></label>
         <label>Fotos<input id="photoFiles" type="file" accept="image/*" multiple><small>É possível selecionar várias.</small></label>
         <label class="span-2">Observações<textarea id="notes" rows="3" placeholder="Pendências, contato, informações para revisão..."></textarea></label>
         <label class="check span-2"><input id="published" type="checkbox" checked> Exibir este laudo na página de acompanhamento</label>
@@ -138,12 +138,25 @@
   <dialog id="protocolDialog"><div class="dialog-head"><div><p class="eyebrow">Solicitação recebida</p><h2>Guarde seu protocolo</h2></div><button type="button" class="icon-button" data-protocol-close>×</button></div><div class="protocol-box"><strong id="protocolNumber"></strong><p>Use este número para identificar sua solicitação. O andamento também aparecerá na página pública.</p><button class="primary" id="copyProtocol">Copiar protocolo</button></div></dialog>
   <dialog id="notificationsDialog"><div class="dialog-head"><div><p class="eyebrow">Central de avisos</p><h2>Notificações</h2></div><button type="button" class="icon-button" data-notifications-close>×</button></div><div id="notificationsList" class="notifications-list"></div></dialog>
 
+  <dialog id="loginDialog">
+    <form id="loginForm">
+      <div class="dialog-head"><div><p class="eyebrow">Área restrita</p><h2>Acesso administrativo</h2><p class="dialog-intro">Entre com o usuário autorizado para cadastrar, atualizar e concluir laudos.</p></div><button type="button" class="icon-button" data-login-close aria-label="Fechar">×</button></div>
+      <div class="login-fields">
+        <label>E-mail<input id="loginEmail" type="email" value="kiritoj125@gmail.com" required autocomplete="username"></label>
+        <label>Senha<input id="loginPassword" type="password" required autocomplete="current-password"></label>
+        <p class="form-error hidden" id="loginError"></p>
+      </div>
+      <div class="dialog-actions"><span></span><button type="button" class="secondary" data-login-close>Cancelar</button><button class="primary" type="submit">Entrar</button></div>
+    </form>
+  </dialog>
+
   <dialog id="detailDialog">
     <div class="dialog-head"><div><p class="eyebrow" id="detailUnit"></p><h2 id="detailTitle"></h2></div><button type="button" class="icon-button" data-close="detailDialog" aria-label="Fechar">×</button></div>
     <div id="detailContent"></div>
   </dialog>
 
   <div class="toast" id="toast" role="status"></div>
+  <script src="cloud.js"></script>
   <script src="app.js"></script>
   <script src="requests.js"></script>
 </body>
