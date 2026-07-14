@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#5620a8">
+  <title>Laudo em Dia | Mamanguape</title>
+  <link rel="icon" type="image/png" href="assets/logo-laudo-em-dia.png">
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="logo.css">
+  <link rel="stylesheet" href="requests.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#gestao" aria-label="Laudo em Dia">
+      <span class="brand-mark"><img src="assets/logo-laudo-em-dia.png" alt=""></span>
+      <span><strong>Laudo em Dia</strong><small>Gestão de imóveis locados</small></span>
+    </a>
+    <nav class="nav" aria-label="Navegação principal">
+      <button class="nav-button active" data-view="gestao">Gestão</button>
+      <button class="nav-button" data-view="publico">Acompanhamento</button>
+      <button class="nav-button" data-view="configuracoes">Configurações</button>
+    </nav>
+    <div class="top-actions"><button class="notification-button" id="openNotifications" aria-label="Notificações">🔔<span id="notificationCount">0</span></button><button class="secondary compact" id="requestReport">Solicitar laudo</button><button class="primary compact" id="newReport">+ Novo laudo</button></div>
+  </header>
+
+  <main>
+    <section class="view active" id="gestao">
+      <div class="hero">
+        <div>
+          <p class="eyebrow">Ciclo mensal de entregas</p>
+          <h1>Todos os laudos, em um só lugar.</h1>
+          <p>Acompanhe vistorias, produção, revisão e entrega sem perder arquivos ou prazos.</p>
+        </div>
+        <div class="deadline-card">
+          <span>Janela de entrega</span>
+          <strong id="deadlineLabel">A partir do dia 30</strong>
+          <small id="deadlineHint">Defina a data final em Configurações</small>
+        </div>
+      </div>
+
+      <div class="metrics" id="metrics"></div>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div><p class="eyebrow">Carteira de laudos</p><h2>Acompanhamento da produção</h2></div>
+          <div class="toolbar">
+            <label class="search"><span>⌕</span><input id="search" type="search" placeholder="Buscar nome, endereço ou secretaria"></label>
+            <select id="statusFilter" aria-label="Filtrar por situação">
+              <option value="">Todas as situações</option><option>Solicitado</option>
+              <option>Aguardando vistoria</option><option>Vistoria realizada</option>
+              <option>Em elaboração</option><option>Aguardando valor</option><option>Em revisão</option>
+              <option>Concluído</option><option>Entregue</option>
+            </select>
+          </div>
+        </div>
+        <div class="report-list" id="reportList"></div>
+        <div class="empty hidden" id="emptyState"><strong>Nenhum laudo encontrado.</strong><span>Ajuste os filtros ou cadastre um novo laudo.</span></div>
+      </section>
+    </section>
+
+    <section class="view" id="publico">
+      <div class="public-hero">
+        <div><p class="eyebrow">Transparência e acompanhamento</p><h1>Laudos de locação de imóveis</h1><p id="publicMessage">Consulte a situação, a última atualização e os documentos publicados.</p></div>
+        <button class="secondary" id="copyPublicLink">Copiar link desta página</button>
+      </div>
+      <div class="public-summary" id="publicSummary"></div>
+      <div class="public-grid" id="publicGrid"></div>
+    </section>
+
+    <section class="view" id="configuracoes">
+      <div class="settings-layout">
+        <section class="panel settings-card">
+          <p class="eyebrow">Prazo mensal</p><h2>Janela de entrega</h2>
+          <label>Dia inicial<input id="startDay" type="number" min="1" max="31" value="30"></label>
+          <label>Data limite deste ciclo<input id="deadline" type="date"></label>
+          <p class="help">O painel destacará laudos pendentes e a proximidade do prazo.</p>
+        </section>
+        <section class="panel settings-card">
+          <p class="eyebrow">Página pública</p><h2>Informações exibidas</h2>
+          <label>Nome do órgão<input id="organization" value="Prefeitura Municipal de Mamanguape"></label>
+          <label>Mensagem<textarea id="publicMessageInput" rows="3"></textarea></label>
+          <p class="help">Somente laudos marcados como públicos aparecem no acompanhamento.</p>
+        </section>
+        <section class="panel settings-card">
+          <p class="eyebrow">Segurança dos dados</p><h2>Backup</h2>
+          <div class="button-stack"><button class="secondary" id="exportData">Exportar cadastro (.json)</button><label class="secondary file-button">Importar cadastro<input id="importData" type="file" accept="application/json"></label></div>
+          <p class="help">O backup JSON contém os cadastros. Guarde também uma cópia dos PDFs e fotos.</p>
+        </section>
+        <button class="primary save-settings" id="saveSettings">Salvar configurações</button>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="reportDialog">
+    <form id="reportForm">
+      <div class="dialog-head"><div><p class="eyebrow">Cadastro</p><h2 id="formTitle">Novo laudo</h2></div><button type="button" class="icon-button" data-close="reportDialog" aria-label="Fechar">×</button></div>
+      <input type="hidden" id="reportId">
+      <div class="form-grid">
+        <label class="span-2">Nome do laudo<input id="title" required placeholder="Ex.: UBS Xuá Mendonça"></label>
+        <label>Secretaria / unidade<input id="unit" required placeholder="Ex.: Secretaria de Saúde"></label>
+        <label>Situação<select id="status"><option>Solicitado</option><option>Aguardando vistoria</option><option>Vistoria realizada</option><option>Em elaboração</option><option>Aguardando valor</option><option>Em revisão</option><option>Concluído</option><option>Entregue</option></select></label>
+        <label class="span-2">Endereço do imóvel<input id="address" required placeholder="Rua, número, bairro, cidade/UF"></label>
+        <label>Data da vistoria<input id="inspectionDate" type="date"></label>
+        <label>Data de conclusão<input id="completedDate" type="date"></label>
+        <label>Data de entrega<input id="deliveryDate" type="date"></label>
+        <label>Progresso <output id="progressOutput">0%</output><input id="progress" type="range" min="0" max="100" step="5" value="0"></label>
+        <label>Responsável técnico<input id="responsible" value="Bruno Rodrigues Xaxier"></label>
+        <label>CREA<input id="crea" value="2118287402"></label>
+        <label>Arquivo PDF<input id="pdfFile" type="file" accept="application/pdf"><small id="currentPdf"></small></label>
+        <label>Fotos<input id="photoFiles" type="file" accept="image/*" multiple><small>É possível selecionar várias.</small></label>
+        <label class="span-2">Observações<textarea id="notes" rows="3" placeholder="Pendências, contato, informações para revisão..."></textarea></label>
+        <label class="check span-2"><input id="published" type="checkbox" checked> Exibir este laudo na página de acompanhamento</label>
+      </div>
+      <div class="dialog-actions"><button type="button" class="danger hidden" id="deleteReport">Excluir</button><span></span><button type="button" class="secondary" data-close="reportDialog">Cancelar</button><button class="primary" type="submit">Salvar laudo</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="requestDialog">
+    <form id="requestForm">
+      <div class="dialog-head"><div><p class="eyebrow">Nova solicitação</p><h2>Solicitar laudo de locação</h2><p class="dialog-intro">Preencha os dados para que o responsável possa analisar e agendar a vistoria.</p></div><button type="button" class="icon-button" data-request-close aria-label="Fechar">×</button></div>
+      <div class="form-grid">
+        <label>Nome do solicitante<input id="requesterName" required placeholder="Nome completo"></label>
+        <label>E-mail para receber atualizações<input id="requesterEmail" type="email" required placeholder="nome@exemplo.com"></label>
+        <label>Telefone/WhatsApp<input id="requesterPhone" inputmode="tel" placeholder="(83) 99999-9999"></label>
+        <label>Secretaria/unidade<input id="requesterUnit" required placeholder="Ex.: Secretaria de Educação"></label>
+        <label class="span-2">Nome do prédio ou serviço<input id="buildingName" required placeholder="Ex.: SCFV, escola, UBS ou secretaria"></label>
+        <label class="span-2">Endereço do imóvel<input id="requestAddress" required placeholder="Rua, número, bairro e cidade"></label>
+        <label class="span-2">Observações (opcional)<textarea id="requestNotes" rows="4" placeholder="Informações adicionais, melhor horário, ponto de referência..."></textarea></label>
+        <label class="span-2">Fotos do imóvel (opcional)<input id="requestPhotos" type="file" accept="image/*" multiple><small>Você pode selecionar várias fotos.</small></label>
+        <label class="check span-2"><input id="requestConsent" type="checkbox" required> Confirmo que os dados informados podem ser usados para atender esta solicitação.</label>
+      </div>
+      <div class="dialog-actions"><span></span><button type="button" class="secondary" data-request-close>Cancelar</button><button class="primary" type="submit">Enviar solicitação</button></div>
+    </form>
+  </dialog>
+
+  <dialog id="protocolDialog"><div class="dialog-head"><div><p class="eyebrow">Solicitação recebida</p><h2>Guarde seu protocolo</h2></div><button type="button" class="icon-button" data-protocol-close>×</button></div><div class="protocol-box"><strong id="protocolNumber"></strong><p>Use este número para identificar sua solicitação. O andamento também aparecerá na página pública.</p><button class="primary" id="copyProtocol">Copiar protocolo</button></div></dialog>
+  <dialog id="notificationsDialog"><div class="dialog-head"><div><p class="eyebrow">Central de avisos</p><h2>Notificações</h2></div><button type="button" class="icon-button" data-notifications-close>×</button></div><div id="notificationsList" class="notifications-list"></div></dialog>
+
+  <dialog id="detailDialog">
+    <div class="dialog-head"><div><p class="eyebrow" id="detailUnit"></p><h2 id="detailTitle"></h2></div><button type="button" class="icon-button" data-close="detailDialog" aria-label="Fechar">×</button></div>
+    <div id="detailContent"></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status"></div>
+  <script src="app.js"></script>
+  <script src="requests.js"></script>
+</body>
+</html>
