@@ -53,6 +53,7 @@
               <option>Em elaboração</option><option>Aguardando valor</option><option>Em revisão</option>
               <option>Concluído</option><option>Entregue</option>
             </select>
+            <select id="monthFilter" aria-label="Filtrar por mês"><option value="">Todos os meses</option></select>
           </div>
         </div>
         <div class="report-list" id="reportList"></div>
@@ -66,6 +67,10 @@
         <button class="secondary" id="copyPublicLink">Copiar link desta página</button>
       </div>
       <div class="public-summary" id="publicSummary"></div>
+      <div class="public-toolbar">
+        <label class="search"><span>⌕</span><input id="publicSearch" type="search" placeholder="Pesquisar nome, endereço ou secretaria"></label>
+        <select id="publicMonthFilter" aria-label="Filtrar laudos públicos por mês"><option value="">Todos os meses</option></select>
+      </div>
       <div class="public-grid" id="publicGrid"></div>
     </section>
 
